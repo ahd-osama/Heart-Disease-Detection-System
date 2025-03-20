@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from streamlit_option_menu import option_menu
 
 # ============ PAGE CONFIGURATION ============
-st.set_page_config(page_title="Heart DiseasePrediction")
+st.set_page_config(page_title="Heart Disease Prediction")
 
 # ============ SIDEBAR NAVIGATION ============
 with st.sidebar:
