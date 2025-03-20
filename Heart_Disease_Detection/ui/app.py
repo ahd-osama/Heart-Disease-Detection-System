@@ -55,7 +55,7 @@ if selected == "Data Visualization":
 
 # ============ HEART DISEASE PREDICTION ============
 elif selected == "Heart Disease Prediction":
-    st.title("🩺 Heart Disease Risk Prediction")
+    st.title("🩺 Heart Disease Prediction")
     st.markdown("### Enter Patient Details Below")
 
     # Improved Input Layout using st.columns()
