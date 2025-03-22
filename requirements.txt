@@ -3,7 +3,7 @@ pandas
 numpy
 scikit-learn
 streamlit
-matplotlib.pyplot
+matplotlib
 streamlit_option_menu
 joblib
 experta
