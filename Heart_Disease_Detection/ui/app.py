@@ -8,11 +8,14 @@ import matplotlib.pyplot as plt
 from streamlit_option_menu import option_menu
 import joblib
 import math
-import sys 
+import sys
 import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../')))
 
-from Heart_Disease_Detection.rule_based_system.rules import HeartDiseaseExpert
+expert_system_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../rule_based_system"))
+
+sys.path.append(expert_system_path)
+
+from rules import HeartDiseaseExpert
 
 st.set_page_config(page_title="Heart Disease Prediction")
 
