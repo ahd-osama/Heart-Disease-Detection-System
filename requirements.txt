@@ -6,5 +6,5 @@ streamlit
 matplotlib
 streamlit_option_menu
 joblib
-experta
-frozendict>=2.3.8
+experta==1.9.4
+frozendict==1.2
