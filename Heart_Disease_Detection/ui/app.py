@@ -4,11 +4,12 @@ import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 from streamlit_option_menu import option_menu
+import joblib
+import math
+from rule_based_system.rules import HeartDiseaseExpert
 
-# ============ PAGE CONFIGURATION ============
 st.set_page_config(page_title="Heart Disease Prediction")
 
-# ============ SIDEBAR NAVIGATION ============
 with st.sidebar:
     selected = option_menu(
         menu_title="Heart Disease Prediction System",
@@ -18,83 +19,142 @@ with st.sidebar:
         default_index=0
     )
 
-# ============ SIMULATED EXAMPLE DATA ============
-df = pd.DataFrame({
-    "Age": np.random.randint(30, 80, 100),
-    "Cholesterol": np.random.randint(100, 400, 100),
-    "Blood Pressure": np.random.randint(80, 180, 100),
-    "Heart Rate": np.random.randint(60, 120, 100),
-    "Diabetes": np.random.choice(["Yes", "No"], 100),
-    "Risk Level": np.random.choice(["Low", "Moderate", "High"], 100)
-})
+data = pd.read_csv("/Users/ahdosama/Documents/Heart_Disease_Detection/data/raw_data.csv")
 
-df_numeric = df.copy()
-df_numeric["Risk Level"] = df_numeric["Risk Level"].map({"Low": 0, "Moderate": 1, "High": 2})
-
-# ============ HOME PAGE ============
+#   Data Visualization Page
 if selected == "Data Visualization":
+
     st.title("📊 Data Visualization & Insights")
 
-    # Show dataset preview
-    st.subheader("🔍 Sample Data")
-    st.dataframe(df.head())
+    st.markdown("Statistical summaries and visualizations.")
 
-    # Correlation Heatmap
-    st.subheader("🔥 Feature Correlation Heatmap")
-    fig, ax = plt.subplots()
-    sns.heatmap(df_numeric.corr(), annot=True, cmap="coolwarm", fmt=".2f", ax=ax)
+# 🔹 Section 1: Statistical Summary
+    st.divider()
+    st.header("Statistical Summary")
+    st.dataframe(data.describe())
+
+# 🔹 Section 2: Feature Correlation
+    st.divider()
+    st.header("Feature Correlation Heatmap")
+    correlation = data.corr()['target'].drop('target').abs().sort_values(ascending=False)
+    corr_df = correlation.to_frame().reset_index()
+    corr_df.columns = ['Feature', 'Correlation with Target']
+
+    fig, ax = plt.subplots(figsize=(5, len(corr_df) * 0.3))
+    sns.heatmap(corr_df.set_index("Feature"), annot=True, cmap="coolwarm", fmt=".2f", linewidths=0.5, ax=ax)
     st.pyplot(fig)
 
-    # Cholesterol Distribution
-    st.subheader("📈 Cholesterol Distribution")
-    fig, ax = plt.subplots()
-    sns.histplot(df["Cholesterol"], bins=20, kde=True, ax=ax)
+    selected_features = correlation[correlation > 0.15]
+    st.markdown("### Selected Features (Correlation > 0.15):")
+    st.success(", ".join(selected_features.index))
+
+# 🔹 Section 3: Boxplots for Numerical Features
+    st.divider()
+    st.header("Boxplots for Numerical Features")
+
+    numerical_features = ["age", "thalach", "oldpeak", "ca"]
+    cols = 2
+    rows = math.ceil(len(numerical_features) / cols)
+    fig, axes = plt.subplots(rows, cols, figsize=(8, rows * 3))
+    axes = axes.flatten()
+
+    for i, feature in enumerate(numerical_features):
+        sns.boxplot(y=data[feature], ax=axes[i])
+        axes[i].set_title(f"Boxplot of {feature}")
+
+    plt.tight_layout()
     st.pyplot(fig)
 
-    st.success("✅ Use this analysis to understand risk factors!")
+# 🔹 Section 4: Histograms for Categorical Features
+    st.divider()
+    st.header("Histograms for Categorical Features")
 
-# ============ HEART DISEASE PREDICTION ============
+    categorical_features = ["sex", "cp", "exang", "slope", "thal"]
+    cols = 3
+    rows = math.ceil(len(categorical_features) / cols)
+    fig, axes = plt.subplots(rows, cols, figsize=(11, rows * 3))
+    axes = axes.flatten()
+
+    for i, feature in enumerate(categorical_features):
+        sns.countplot(x=data[feature], edgecolor="black", ax=axes[i])
+        axes[i].set_title(f"Histogram of {feature}")
+
+    for j in range(i + 1, len(axes)):
+        fig.delaxes(axes[j])
+
+    plt.tight_layout()
+    st.pyplot(fig)
+
+#   Heart Disease Prediction Page
 elif selected == "Heart Disease Prediction":
-    st.title("🩺 Heart Disease Prediction")
-    st.markdown("### Enter Patient Details Below")
+    
+    st.title("🩺 Heart Disease Risk Prediction")
+    st.markdown("### Enter Your Health Details for a Risk Check")
 
-    # Improved Input Layout using st.columns()
     col1, col2 = st.columns(2)
 
     with col1:
         age = st.number_input("📅 Age", 20, 80, 50)
-        cholesterol = st.number_input("🩸 Cholesterol Level", 100, 400, 200)
+        oldpeak = st.number_input("📉 ST Depression (Oldpeak)", 0.0, 6.2, 1.0)
+        exang = st.selectbox("Exercise Induced Angina (Exang)", [0, 1], format_func=lambda x: "Yes" if x == 1 else "No")
+        cp = st.selectbox("Chest Pain Type (CP)", [0, 1, 2, 3])
+        sex = st.radio("Sex", [0, 1], format_func=lambda x: "Male" if x == 1 else "Female", horizontal=True)
 
     with col2:
-        blood_pressure = st.number_input("❤️ Blood Pressure", 80, 200, 120)
-        exercise = st.selectbox("🏃‍♂️ Do you exercise regularly?", ["Yes", "No"])
+        thalach = st.number_input("Max Heart Rate Achieved (Thalach)", 70, 220, 150)
+        ca = st.slider("Number of Major Vessels (CA)", 0, 4, 0)
+        slope = st.selectbox("📈 Slope of ST Segment", [0, 1, 2])
+        thal = st.selectbox("🧬 Thalassemia Type", [0, 1, 2, 3])
 
-    smoking = st.selectbox("🚬 Do you smoke?", ["Yes", "No"])
-
-    # Fake rule-based expert system
-    def rule_based_prediction(age, cholesterol, blood_pressure, exercise, smoking):
-        if cholesterol > 240 and age > 50:
+    def rule_based_prediction(age, oldpeak, exang, cp, thalach, ca, slope, thal, sex):
+        if age > 60 and oldpeak > 2:
             return "High Risk"
-        elif blood_pressure > 140 and smoking == "Yes":
-            return "High Risk"
-        elif exercise == "Yes" and cholesterol < 180:
+        elif cp in [2, 3] and thalach > 150:
             return "Low Risk"
+        elif exang == 1 and ca > 1:
+            return "High Risk"
         else:
             return "Moderate Risk"
+ 
+    col1, col2, col3 = st.columns([1, 3, 1])  
 
-    # Fake ML-based prediction
-    def ml_prediction():
-        return np.random.choice(["Low Risk", "Moderate Risk", "High Risk"], p=[0.3, 0.5, 0.2])
+    with col2:
+        predict = st.button("🔍 **Predict Risk**", use_container_width=True)
 
-    # Predict Button
-    st.markdown("---")  # Add a separator for better visuals
+    st.divider()
 
-    if st.button("🔍 Predict Risk"):
-        rule_pred = rule_based_prediction(age, cholesterol, blood_pressure, exercise, smoking)
-        ml_pred = ml_prediction()
+    cp_encoded = [1 if cp == i else 0 for i in range(4)]
+    thal_encoded = [1 if thal == i else 0 for i in range(4)]
+    slope_encoded = [1 if slope == i else 0 for i in range(3)]
+
+    feature_names = [
+        "age", "sex", "thalach", "exang", "oldpeak", "ca",
+        "cp_0", "cp_1", "cp_2", "cp_3",
+        "thal_0", "thal_1", "thal_2", "thal_3",
+        "slope_0", "slope_1", "slope_2"
+    ]
+
+    if predict:
+
+        input_data = np.array([[age, sex, thalach, exang, oldpeak, ca] + cp_encoded + thal_encoded + slope_encoded])
+        input_df = pd.DataFrame(input_data, columns=feature_names)
 
         st.subheader("🩺 Prediction Results")
-        st.success(f"📜 **Rule-Based Expert System:** {rule_pred}")
-        st.info(f"🤖 **Machine Learning Model:** {ml_pred}")
+        col1, col2 = st.columns(2)  
 
-        st.markdown("✅ This is a test UI! Integrate real models next. 🚀")
+        model = joblib.load("../data/model.pkl")
+        ml_pred = model.predict(input_df)[0]
+        risk_levels = {0: "✅ Low Risk", 1: "⚠️ High Risk"}
+
+        expert_system = HeartDiseaseExpert()
+        rule_pred = expert_system.predict(input_df.iloc[0].to_dict())
+    
+        with col1:
+            st.success("📑 **Rule-Based Expert System**")
+            st.metric(label="Risk Level", value=risk_levels.get(rule_pred))
+
+        with col2:
+            st.info("🤖 **Machine Learning Model**")
+            st.metric(label="Risk Level", value=risk_levels.get(ml_pred))
+        
+    
