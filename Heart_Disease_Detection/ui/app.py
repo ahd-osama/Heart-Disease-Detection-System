@@ -1,5 +1,3 @@
-import os
-print("Current Working Directory:", os.getcwd())
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -143,7 +141,7 @@ elif selected == "Heart Disease Prediction":
         st.subheader("🩺 Prediction Results")
         col1, col2 = st.columns(2)  
 
-        model = joblib.load("model_path")
+        model = joblib.load(model_path)
         ml_pred = model.predict(input_df)[0]
         risk_levels = {0: "✅ Low Risk", 1: "⚠️ High Risk"}
 
