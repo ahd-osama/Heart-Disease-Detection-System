@@ -1,5 +1,3 @@
-import os
-os.system("pip install --upgrade frozendict")
 import streamlit as st
 import pandas as pd
 import numpy as np
