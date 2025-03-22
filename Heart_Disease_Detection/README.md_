@@ -1,0 +1,45 @@
+# Heart Disease Detection System
+
+This project implements a Heart Disease Prediction System using both **Rule-Based Expert System** and **Machine Learning** techniques. The goal of the project is to predict the likelihood of heart disease based on a set of health indicators. 
+
+## Project Overview
+
+The Heart Disease Detection system combines a **machine learning model** (using a Decision Tree Classifier) and a **rule-based expert system** to provide predictions regarding heart disease risk. The system allows users to input their health data (such as age, sex, cholesterol levels, etc.) and get an assessment of their risk level (low or high) based on both the rule-based system and the machine learning model.
+
+Key components of the system include:
+
+- **Data Preprocessing:** Scaling of numerical features (such as age, thalach, oldpeak, and ca).
+- **Machine Learning Model:** Decision Tree Classifier for predicting heart disease risk.
+- **Rule-Based Expert System:** Utilizes predefined rules to simulate expert-based decision-making in predicting heart disease risk.
+- **User Interface:** An interactive web application built with **Streamlit** for users to input their health details and get predictions.
+
+## Features
+
+- **Data Visualization:** Statistical summaries, feature correlation heatmap, and box plots for numerical features.
+- **Interactive Prediction:** Users can enter their health details and predict the likelihood of heart disease using the machine learning model and the expert system.
+- **Multiple Prediction Methods:** Predictions are provided by both the machine learning model and the rule-based system, allowing for a more comprehensive evaluation.
+
+## Technologies Used
+
+- **Python:** Programming language used for the entire project.
+- **Streamlit:** Web framework to create the interactive UI.
+- **Scikit-learn:** Library used for machine learning models and data preprocessing.
+- **Pandas:** Data manipulation and analysis.
+- **NumPy:** Library for numerical operations.
+- **Seaborn & Matplotlib:** Visualization libraries for generating plots and graphs.
+- **Joblib:** For saving and loading machine learning models and scalers.
+- **Rule-based Expert System:** Custom expert system for heart disease risk prediction.
+
+## Installation
+
+1. Clone this repository:
+
+   ```bash
+   git clone https://github.com/ahd-osama/Heart-Disease-Detection-System.git
+   cd heart-disease-prediction
+
+2. Install the required dependencies:
+  pip install -r requirements.txt
+
+3. Run the Streamlit application:
+   streamlit run app.py
