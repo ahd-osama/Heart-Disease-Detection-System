@@ -102,7 +102,7 @@ elif selected == "Heart Disease Prediction":
     col1, col2 = st.columns(2)
 
     with col1:
-        age = st.number_input("📅 Age", 20, 80, 50)
+        age = st.number_input("📅 Age", 20, 100, 50)
         oldpeak = st.number_input("📉 ST Depression (Oldpeak)", 0.0, 6.2, 1.0)
         exang = st.selectbox("Exercise Induced Angina (Exang)", [0, 1], format_func=lambda x: "Yes" if x == 1 else "No")
         cp = st.selectbox("Chest Pain Type (CP)", [0, 1, 2, 3])
