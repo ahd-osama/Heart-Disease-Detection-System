@@ -27,7 +27,7 @@ class HeartDiseaseExpert(KnowledgeEngine):
     def blocked_vessels(self):
         self.risk_count += 1
 
-  @Rule(Fact(thal=P(lambda x: x in [6, 7])))
+    @Rule(Fact(thal=P(lambda x: x in [6, 7])))
     def thalassemia_defect(self):
         self.risk_count += 1
 
