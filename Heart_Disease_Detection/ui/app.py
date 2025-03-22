@@ -27,8 +27,9 @@ with st.sidebar:
         menu_icon="hospital",
         default_index=0
     )
-
-data = pd.read_csv("../data/raw_data.csv")
+    
+data_path = os.path.join(os.path.dirname(__file__), "../data/raw_data.csv")
+data = pd.read_csv(data_path)
 
 #   Data Visualization Page
 if selected == "Data Visualization":
