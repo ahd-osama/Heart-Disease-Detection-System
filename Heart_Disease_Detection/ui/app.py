@@ -19,7 +19,7 @@ with st.sidebar:
         default_index=0
     )
 
-data = pd.read_csv("/Users/ahdosama/Documents/Heart_Disease_Detection/data/raw_data.csv")
+data = pd.read_csv("../data/raw_data.csv")
 
 #   Data Visualization Page
 if selected == "Data Visualization":
