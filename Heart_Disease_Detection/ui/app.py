@@ -115,16 +115,6 @@ elif selected == "Heart Disease Prediction":
         ca = st.slider("Number of Major Vessels (CA)", 0, 4, 0)
         slope = st.selectbox("📈 Slope of ST Segment", [0, 1, 2])
         thal = st.selectbox("🧬 Thalassemia Type", [0, 1, 2, 3])
-
-    def rule_based_prediction(age, oldpeak, exang, cp, thalach, ca, slope, thal, sex):
-        if age > 60 and oldpeak > 2:
-            return "High Risk"
-        elif cp in [2, 3] and thalach > 150:
-            return "Low Risk"
-        elif exang == 1 and ca > 1:
-            return "High Risk"
-        else:
-            return "Moderate Risk"
  
     col1, col2, col3 = st.columns([1, 3, 1])  
 
@@ -148,11 +138,12 @@ elif selected == "Heart Disease Prediction":
 
         input_data = np.array([[age, sex, thalach, exang, oldpeak, ca] + cp_encoded + thal_encoded + slope_encoded])
         input_df = pd.DataFrame(input_data, columns=feature_names)
+        model_path = os.path.join(os.path.dirname(__file__), "../data/model.pkl")
 
         st.subheader("🩺 Prediction Results")
         col1, col2 = st.columns(2)  
 
-        model = joblib.load("../data/model.pkl")
+        model = joblib.load("model_path")
         ml_pred = model.predict(input_df)[0]
         risk_levels = {0: "✅ Low Risk", 1: "⚠️ High Risk"}
 
