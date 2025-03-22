@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from streamlit_option_menu import option_menu
 import joblib
 import math
-
+import sys, os
 print("Python PATH:", sys.path)
 print("Current Directory:", os.getcwd())
 from Heart_Disease_Detection.rule_based_system.rules import HeartDiseaseExpert
